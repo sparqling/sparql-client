@@ -10,5 +10,8 @@
   "license": "MIT",
   "bin": {
     "sparql-client": "./bin/sparql-client.js"
+  },
+  "dependencies": {
+    "commander": "^11.0.0"
   }
 }
