@@ -31,5 +31,7 @@ if (program.args.length < 1 && process.stdin.isTTY) {
     sparql = await readStdin();
   }
   sparql = sparql.toString();
-  sparqlClient.query(opts.endpoint, sparql, opts.format);
+
+  const result = await sparqlClient.query(opts.endpoint, sparql, opts.format);
+  console.log(result);
 })();
