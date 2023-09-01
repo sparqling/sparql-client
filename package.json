@@ -1,0 +1,14 @@
+{
+  "name": "sparql-client",
+  "version": "0.0.1",
+  "description": "SPARQL client",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sparqling/sparql-client"
+  },
+  "author": "Hirokazu Chiba",
+  "license": "MIT",
+  "bin": {
+    "sparql-client": "./bin/sparql-client.js"
+  }
+}
