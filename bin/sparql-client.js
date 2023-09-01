@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 const fs = require('fs').promises;
-const axios = require('axios');
 const program = require('commander');
+
 const version = require('../package.json').version;
+const sparqlClient = require('../lib/sparql-client.js');
 
 const opts = program
   .option('-e, --endpoint <ENDPOINT>', 'target SPARQL endpoint', 'https://spang.dbcls.jp/sparql-test')
@@ -16,27 +17,6 @@ const opts = program
 if (program.args.length < 1 && process.stdin.isTTY) {
   program.help();
 }
-
-const acceptHeaderMap = {
-  "xml"      : "application/sparql-results+xml",
-  "json"     : "application/sparql-results+json",
-  "tsv"      : "application/sparql-results+json", // receive as json and format to tsv afterward
-  "text"     : "text/tab-separated-values",
-  "csv"      : "text/csv",
-  "n-triples": "text/plain",
-  "nt"       : "text/plain",
-  "n3"       : "text/rdf+n3",
-  "html"     : "text/html",
-  "bool"     : "text/boolean",
-  "turtle"   : "application/x-turtle",
-  "ttl"      : "application/x-turtle",
-  "rdf/xml"  : "application/rdf+xml",
-  "rdfxml"   : "application/rdf+xml",
-  "rdfjson"  : "application/rdf+json",
-  "rdfbin"   : "application/x-binary-rdf",
-  "rdfbint"  : "application/x-binary-rdf-results-table",
-  "js"       : "application/javascript",
-};
 
 (async () => {
   let sparql;
@@ -51,19 +31,5 @@ const acceptHeaderMap = {
     sparql = await readStdin();
   }
   sparql = sparql.toString();
-
-  const accept = acceptHeaderMap[opts.format];
-  const headers = {
-    'User-agent': `sparql-client/${version}`,
-    Accept: accept
-  };
-  let requestParams = new URLSearchParams({ 'query': sparql });
-  response = await axios.get(opts.endpoint, { params: requestParams, headers: headers });
-  body = response.data;
-  if (opts.format === 'json') {
-    const text = JSON.stringify(body, null, 2);
-    console.log(text);
-  } else{
-    console.log(body);
-  }
+  sparqlClient.query(opts.endpoint, sparql, opts.format);
 })();
