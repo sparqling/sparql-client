@@ -59,10 +59,11 @@ const acceptHeaderMap = {
   };
   let requestParams = new URLSearchParams({ 'query': sparql });
   response = await axios.get(opts.endpoint, { params: requestParams, headers: headers });
+  body = response.data;
   if (opts.format === 'json') {
-    body = JSON.stringify(response.data, null, 2);
+    const text = JSON.stringify(body, null, 2);
+    console.log(text);
   } else{
-      body = response.data;
+    console.log(body);
   }
-  console.log(body);
 })();
