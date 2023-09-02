@@ -19,7 +19,7 @@ if (program.args.length < 1 && process.stdin.isTTY) {
 }
 
 (async () => {
-  let sparql;
+  let sparql = '';
   if (program.args[0]) {
     try {
       sparql = await fs.readFile(program.args[0], "utf8");
@@ -28,22 +28,12 @@ if (program.args.length < 1 && process.stdin.isTTY) {
       process.exit(1);
     }
   } else {
-    sparql = await readStdin();
+    process.stdin.setEncoding('utf8');
+    for await (const chunk of process.stdin) {
+      sparql += chunk;
+    }
   }
 
   const result = await sparqlClient.query(opts.endpoint, sparql, opts.format);
   console.log(result);
 })();
-
-function readStdin() {
-  let buf = '';
-  return new Promise(resolve => {
-    process.stdin.on('readable', () => {
-      let chunk;
-      while (chunk = process.stdin.read()) {
-        buf += chunk;
-      }
-    });
-    process.stdin.on('end', () => resolve(buf))
-  });
-}
