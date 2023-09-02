@@ -30,8 +30,20 @@ if (program.args.length < 1 && process.stdin.isTTY) {
   } else {
     sparql = await readStdin();
   }
-  sparql = sparql.toString();
 
   const result = await sparqlClient.query(opts.endpoint, sparql, opts.format);
   console.log(result);
 })();
+
+function readStdin() {
+  let buf = '';
+  return new Promise(resolve => {
+    process.stdin.on('readable', () => {
+      let chunk;
+      while (chunk = process.stdin.read()) {
+        buf += chunk;
+      }
+    });
+    process.stdin.on('end', () => resolve(buf))
+  });
+}
